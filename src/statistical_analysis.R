@@ -17,8 +17,8 @@ loans_per_district <- merge(account_district, loan_data,
 )
 
 total_loans_per_district <- aggregate(
-  loans_per_districtit$amount,
-  list(loans_per_districtit$name),
+  loans_per_district$amount,
+  list(loans_per_district$name),
   FUN = sum
 )
 
@@ -26,11 +26,27 @@ total_loans_per_district <- total_loans_per_district[
   order(total_loans_per_district$x, decreasing = TRUE),
 ]
 
+png("images/loans-per-district.png")
 barplot(total_loans_per_district$x,
   names.arg = total_loans_per_district$Group.1,
   las = 2, cex.names = 0.6
 )
+dev.off()
 
+png("images/accounts-per-district.png")
 barplot(sort(table(account_district$region),
   decreasing = TRUE
 ), las = 2, cex.names = 0.6, ylim = c(0, 1000))
+dev.off()
+
+loan_data$date <- paste("19", loan_data$date, sep = "")
+loan_data$date <- as.Date(loan_data$date, "%Y%m%d")
+
+
+png("images/loans-per-month.png")
+hist(loan_data$date,
+  breaks = "months",
+  main = "Loans per month", xlab = "",
+  format = "%b %y", freq = TRUE, las = 2,
+)
+dev.off()
