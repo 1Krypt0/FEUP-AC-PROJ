@@ -1,25 +1,31 @@
 # Business Understanding
 
+This is a report detailing our understanding of the project we are about to embark in, as well as the planned course of action through it all. It details the major questions and issues that arise when dealing with a Data Mining problem like this one.
+
+This report was created by:
+- Miguel Amorim - up201907756@up.pt
+- Rita Mendes - up201907877@up.pt
+- Tiago Rodrigues - up201907021@up.pt
+
 ## The Business Objectives
 
-It is essential to first thoroughly understand what the customer really wants to accomplish. From a productivity standpoint, this implies that with a well defined goal, it is easy to go searching for the correct questions and, as follows, the correct answers. As such, there are a few key aspects to take in consideration when first handling this project.
+It is essential to first thoroughly understand what the customer wants to accomplish. From a productivity standpoint, this implies that with a well-defined goal, it is easy to go searching for the correct questions and, as follows, the correct answers. As such, there are a few key aspects to take into consideration when first handling this project.
 
 ### Customer Background
 
-In this project, we are dealing with a banking company. The bank managers wish to improve the services of their bank, and make better decisions alongside it, improving customer satisfaction. This not only drives profits for the bank, but good clients can be rewarded more often, leading them to visit the bank even more.
+In this project, we are dealing with a banking company. The bank managers wish to improve the services of their bank and make better decisions alongside it, improving customer satisfaction. This not only drives profits for the bank but good clients can be rewarded more often, leading them to visit the bank even more.
 
-The most pressing issue is that the bank cannot tell with reasonable certainty who is a good client and who is not. This is important, for example, when issuing loans, as they need to be paid back to make it a sound business decision. When issuing loans to the wrong people, there are a load of problems associated that a bank would rather avoid altogether in the first place.
+The most pressing issue is that the bank cannot tell with reasonable certainty who is a good client and who is not. This is important, for example, when issuing loans, as they need to be paid back to make it a sound business decision. When issuing loans to the wrong people, there are a lot of problems associated that a bank would rather avoid altogether in the first place.
 
 ### Business objectives
 
-The first and most important goal is to reliably distinguish between a good and a bad client. With this in mind, a more concrete statement that the bank wishes to be fulfilled is the prediction of wether some loans will end up successfuly or not.
+The first and most important goal is to reliably distinguish between a good and a bad client. With this in mind, a more concrete statement that the bank wishes to be fulfilled is the prediction of whether some loans will end up successful or not.
 
-Ideally, the bank would not lose a single customer with this new system, but it is very likely that customers identified as bad can be drawn away from visiting the service, as their loan requests would be denied.
+Ideally, the bank would not lose a single customer with this new system, but customers identified as bad can likely be drawn away from visiting the service, as their loan requests would be denied.
 
 While the bank did not present any success criteria, it is a good starting point to try and get to a 90% success rate on loan prediction, with this number increasing as the system is refined. As such, a good statement to sum up the objectives of the customer would be:
 
-> The bank wishes to succesfully predict wether a loan will be sucessful or not with at least a 90% accuracy in the results.
-
+> The bank wishes to successfully predict whether a loan will be successful or not, such that, for every 100 clients that request a loan, at least 90 will pay it back fully and without complications.
 
 ## Assessing the current situation
 
@@ -27,23 +33,26 @@ It is important to do a small analysis of what the status quo is before creating
 
 ### Inventory of resources
 
-The only resource offered by the customer was a dataset with their customers data, ranging from 1993 to 1996. It was anonimized but it still includes key information about the customers, as well as their transactions and loan histories. We were free to choose which tools we ould use to explore this dataset.
+The only resource offered by the customer was a dataset with their customers' data, ranging from 1993 to 1996. It was anonymized but it still includes key information about the customers, as well as their transactions and loan histories. We were free to choose which tools we could use to explore this dataset.
 
 ### Requirements, assumptions and constraints
 
 #### Requirements
 
-The main requirement provided was the completion date, which was set to be on the 29th of October, 2022. Besides that, no other requirement was put forward beside the creation of a final report, in the form of a presentation, describing all of these tasks.
+The main requirement provided was the completion date, which was set to be on the 28th of November, 2022. Besides that, no other requirement was put forward besides the creation of a final report, in the form of a presentation, describing all of these tasks.
 
-#### TODO: Assumptions
+#### Assumptions
 
-- [ ] Clarify all assumptions (including implicit ones) and make them explicit (e.g., to address the business question, a minimum number of customers with age above 50 is necessary)  
-- [ ] List assumptions on data quality (e.g., accuracy, availability)  
-- [ ] List assumptions on external factors (e.g., economic issues, competitive products, technical advances)  
-- [ ] Clarify assumptions that lead to any of the estimates (e.g., the price of a specific tool is assumed to be lower than $1,000)  
-- [ ] List all assumptions regarding whether it is necessary to understand and describe or explain the model (e.g., how should the model and results be presented to senior management/sponsor)
+The following presents a few assumptions that will be made to make the development of a solution easier:
 
-List the assumptions made by the project. These may be assumptions about the data, which can be verified during data mining, but may also include non-verifiable assumptions related to the project. It is particularly important to list the latter if they will affect the validity of the results.
+- All clients of the bank are present in the dataset
+- All transactions of said clients are also present
+- There are no impossible balances in the dataset (all are positive)
+- Each client can have more than one account, and each account can have several people managing it
+- No more than one loan can be granted per account
+- Several credit cards can be issued to an account
+
+The first 3 assumptions are made without looking at the data, and they exist to ensure data validity when exploring the set. All others are true after looking at the set, and they allow us to draw a better picture of the model behind the data.
 
 #### Constraints
 
@@ -51,42 +60,30 @@ There are no foreseeable constraints in the development of this project.
 
 ## Output of the project
 
-A business goal states objectives in business terminology; a data mining goal states project objectives in technical terms. For example, the business goal might be, “Increase catalog sales to existing customers,”  
-while a data mining goal might be, “Predict how many widgets a customer will buy, given their purchases over the past three years, relevant demographic information, and the price of the item.”
-
-The Data Mining Goals section states the results of the project that enable the achievement of the business objectives. As well as listing the probable data mining approaches, the success criteria for the results in data mining terms, should also be listed.
+Without a defined output to the project, it is easy to derail and start to look for the wrong things. Clearly defining the end goal allows us to keep on track when other problems emerge, and to steer the project in the right direction in the face of unexpected issues.
 
 ### Data Mining Goals
 
-Describe the intended outputs of the project that enable the achievement of the business objectives. Note that these are normally technical outputs.
-
-- [ ] Translate the business questions to data mining goals (e.g., a marketing campaign requires segmentation of customers in order to decide whom to approach in this campaign; the level/size of the segments should be specified).  
-- [ ] Specify data mining problem type (e.g., classification, description, prediction, and clustering). For more details about data mining problem types, see Appendix 2.
+The problem described in this project fits into the metrics of a predictive data mining problem, that is, the prediction of whether a loan will end up successfully.
 
 ### Success criteria
 
-Define the criteria for a successful outcome to the project in technical terms, for example a certain level of predictive accuracy or a propensity-to-purchase profile with a given degree of “lift.” As with business success criteria, it may be necessary to describe these in subjective terms, in which case the person or persons making the subjective judgment should be identified.
-
-- [ ] Specify criteria for model assessment (e.g., model accuracy, performance and complexity)  
-- [ ] Define benchmarks for evaluation criteria  
-- [ ] Specify criteria which address subjective assessment criteria (e.g., model explain ability and data and marketing insight provided by the model
+The success criteria are, essentially, equivalent to those of the business at hand, which are successfully determining if a given loan will end up successful with a higher than 90% accuracy. This system should try to create a profile from the available data for what makes a good client and determine if the bank should issue a loan or not.
 
 ## Project Plan
 
-List the stages to be executed in the project, together with their duration, resources required, inputs, outputs, and dependencies. Wherever possible, make explicit the large-scale iterations in the data mining process— for example, repetitions of the modeling and evaluation phases. As part of the project plan, it is also important to analyze dependencies between time schedule and risks. Mark results of these analyses explicitly in the project plan, ideally with actions and recommendations for actions if the risks are manifested. Although this is the only task in which the project plan is directly named, it nevertheless should be consulted continually and reviewed throughout the project. The project plan should be consulted at minimum whenever a new task is started or a further iteration of a task or activity is begun.
+This project will mostly follow a [CRISP-DM](https://moodle.up.pt/pluginfile.php/106197/mod_resource/content/1/Ncr%20et%20al.%20-%202000%20-%20Crisp-dm%201.0.pdf) approach, and as such our plan revolves a lot around the same stages as the ones detailed in the guides. It is to note that, for now, these stages are crude and only overall descriptions. More concrete steps can only be obtained as the stages advance and it is clear what to do next.
 
-This section lists the stages to be executed in the project, together with their duration, resources required, inputs, outputs, and dependencies. Where possible, it should make explicit the large-scale iterations in the data mining process—for example, repetitions of the modeling and evaluation phases.
+The first and most important step is to understand the data at hand. This not only allows us to get a better understanding of the issues faced, but it can give rise to new insights and alter the project's course entirely. This stage will be tightly integrated with every stage, as finding new things about the data can change the entire perspective of the project.
 
-- [ ] Define the initial process plan and discuss the feasibility with all involved personnel  
-- [ ] Combine all identified goals and selected techniques in a coherent procedure that solves the business questions and meets the business success criteria  
-- [ ] Estimate the effort and resources needed to achieve and deploy the solution. (It is useful to consider other people’s experience when estimating timescales for data mining projects. For example, it is often postulated that 50-70 percent of the time and effort in a data mining project is used in the Data Preparation Phase and 20-30 percent in the Data Understanding Phase, while only 10-20 percent is spent in each of the Modeling, Evaluation, and Business Understanding Phases and 5-10 percent in the Deployment Phase.)  
-- [ ] Identify critical steps  
-- [ ] Mark decision points  
-- [ ] Mark review points  
-- [ ] Identify major iterations
+With the data thoroughly analyzed, we can proceed to select a good subset and clean it, removing any values deemed outliers in the process. These will contribute little to the research and they can skew the results in the wrong direction. New attributes are also built in this stage, to make it easier for further iterations to operate on the data. With the data prepared, it is possible to move on.
+
+The final stage is a simpler one since most of the work is automated. It entails using the acquired subset and running it through a series of models, continuously improving it until a satisfying value is achieved. More importantly, it is necessary to be cautious about overfitting the model to the data, so testing with different subsets of the data is important. When the values are tweaked and the metrics match our business and data mining goals, the solution can be considered obtained and deployed to the customer, who can now use it to its benefit.
+
+With this final stage we can, if the time constraints allow, try and improve the existing model and boost the accuracy even more. Running this process iteratively and going through each of the stages several times, like the traditional Agile processes of Software Engineering, help us get a better vision of the final product, and course-correct many more times than with a traditional Waterfall methodology.
 
 ### Tools and techniques
 
-As our tool of choice, the programming language R was chosen, as it provides an incredible out of the box API for data understanding, with its  built-in charting features and Data Frame structures. When trying to figure out how the data is structured and seeing some patterns emerge, having a programming language like R, which allows us to do this seamlesly, is a great advantage.
+As our tool of choice, the programming language R was chosen, as it provides an incredible out-of-the-box API for data understanding, with its built-in charting features and Data Frame structures. When trying to figure out how the data is structured and seeing some patterns emerge, having a programming language like R, which allows us to do this seamlessly, is a great advantage.
 
 As a backup tool, we may end up using RapidMiner, for its ease of use and simplicity by being a no-code tool, and for its ability to quickly generate some predictive analysis on the dataset, without a lot of work from its user. While we will try to stick to R only during this project, RapidMiner may be a valuable asset in the future.
