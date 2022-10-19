@@ -2,75 +2,40 @@
 
 ## The Business Objectives
 
-The first objective of the analyst is to thoroughly understand, from a business perspective, what the customer really wants to accomplish. Often the customer has many competing objectives and constraints that must be properly balanced. The analyst’s goal is to uncover important factors at the beginning of the project that can influence the final outcome. A likely consequence of neglecting this step would be to expend a great deal of effort producing the correct answers to the wrong questions.
+It is essential to first thoroughly understand what the customer really wants to accomplish. From a productivity standpoint, this implies that with a well defined goal, it is easy to go searching for the correct questions and, as follows, the correct answers. As such, there are a few key aspects to take in consideration when first handling this project.
 
-### Background
+### Customer Background
 
-The Background section provides a basic overview of the project context. This lists what area the project is working in, what problems have been identified, and why data mining appears to provide a solution.
+In this project, we are dealing with a banking company. The bank managers wish to improve the services of their bank, and make better decisions alongside it, improving customer satisfaction. This not only drives profits for the bank, but good clients can be rewarded more often, leading them to visit the bank even more.
 
-#### Organization
-
-- [ ] Identify key persons in the business and their role
-- [ ] Identify the business units which are affected by the data mining project (e.g., Marketing, Sales, Finance
-
-#### Problem Area
-
-- [ ] Identify the problem area (e.g., marketing, customer care, business development, etc.)
-- [ ] Describe the problem in general terms
-- [ ] Clarify prerequisites of the project (e.g., What is the motivation of the project? Does the business already use data mining?)
+The most pressing issue is that the bank cannot tell with reasonable certainty who is a good client and who is not. This is important, for example, when issuing loans, as they need to be paid back to make it a sound business decision. When issuing loans to the wrong people, there are a load of problems associated that a bank would rather avoid altogether in the first place.
 
 ### Business objectives
 
-The Business Objectives section describes the goals of the project in business terms. For each objective, Business Success Criteria, i.e., explicit measures for determining whether or not the project succeeded in its objectives, should be provided. This section should also list objectives that were considered but rejected. The rationale of the selection of objectives should be given.
+The first and most important goal is to reliably distinguish between a good and a bad client. With this in mind, a more concrete statement that the bank wishes to be fulfilled is the prediction of wether some loans will end up successfuly or not.
 
-- [ ] Informally describe the problem to be solved
-- [ ] Specify all business questions as precisely as possible
-- [ ] Specify any other business requirements (e.g., the business does not want to lose any customers)
-- [ ] Specify expected benefits in business terms
+Ideally, the bank would not lose a single customer with this new system, but it is very likely that customers identified as bad can be drawn away from visiting the service, as their loan requests would be denied.
 
-### Business success criteria
+While the bank did not present any success criteria, it is a good starting point to try and get to a 90% success rate on loan prediction, with this number increasing as the system is refined. As such, a good statement to sum up the objectives of the customer would be:
 
-- [ ] Specify business success criteria (e.g., Improve response rate in a mailing campaign by 10 percent and sign-up rate by 20 percent)
-- [ ] Identify who assesses the success criteria
+> The bank wishes to succesfully predict wether a loan will be sucessful or not with at least a 90% accuracy in the results.
+
 
 ## Assessing the current situation
 
-This task involves more detailed fact-finding about all of the resources, constraints, assumptions, and other factors that should be considered in determining the data analysis goal and in developing the project plan
+It is important to do a small analysis of what the status quo is before creating a plan, as the available resources may condition or drive the plan moving forward.
 
 ### Inventory of resources
 
-List the resources available to the project, including personnel (business and data experts, technical support, data mining experts), data (fixed extracts, access to live warehoused or operational data), computing resources (hardware platforms), and software (data mining tools, other relevant software).
-
-The Inventory of Resources section aims to identify personnel, data sources, technical facilities, and other resources that may be useful in carrying out the project.
-
-#### Sources of data and knowledge
-
-- [ ] Identify data sources
-- [ ] Identify type of data sources (online sources, experts, written documentation, etc.)
-- [ ] Identify knowledge sources
-- [ ] Identify type of knowledge sources (online sources, experts, written documentation, etc.)
-- [ ] Check available tools and techniques
-- [ ] Describe the relevant background knowledge (informally or formally)
+The only resource offered by the customer was a dataset with their customers data, ranging from 1993 to 1996. It was anonimized but it still includes key information about the customers, as well as their transactions and loan histories. We were free to choose which tools we ould use to explore this dataset.
 
 ### Requirements, assumptions and constraints
 
-List all requirements of the project, including schedule of completion, comprehensibility, and quality of results and security, as well as legal issues. As part of this output, make sure that you are allowed to use
-the data.
-
-List the assumptions made by the project. These may be assumptions about the data, which can be verified during data mining, but may also include non-verifiable assumptions related to the project. It is particularly important to list the latter if they will affect the validity of the results.
-
-List the constraints made on the project. These constraints might involve lack of resources to carry out some of the tasks in the project in the time required, or there may be legal or ethical constraints on the use of the data or the solution needed to carry out the data mining task.
-
-This section lists general requirements for the project’s execution: type of project results, assumptions made about the nature of the problem and the data being used, and constraints imposed on the project.
-
 #### Requirements
 
-- [ ] Specify target group profile  
-- [ ] Capture all requirements on scheduling  
-- [ ] Capture requirements on comprehensibility, accuracy, deploy ability, maintainability, and repeatability of the data mining project and the resulting model(s)  
-- [ ] Capture requirements on security, legal restrictions, privacy, reporting, and project schedule
+The main requirement provided was the completion date, which was set to be on the 29th of October, 2022. Besides that, no other requirement was put forward beside the creation of a final report, in the form of a presentation, describing all of these tasks.
 
-#### Assumptions
+#### TODO: Assumptions
 
 - [ ] Clarify all assumptions (including implicit ones) and make them explicit (e.g., to address the business question, a minimum number of customers with age above 50 is necessary)  
 - [ ] List assumptions on data quality (e.g., accuracy, availability)  
@@ -78,19 +43,16 @@ This section lists general requirements for the project’s execution: type of p
 - [ ] Clarify assumptions that lead to any of the estimates (e.g., the price of a specific tool is assumed to be lower than $1,000)  
 - [ ] List all assumptions regarding whether it is necessary to understand and describe or explain the model (e.g., how should the model and results be presented to senior management/sponsor)
 
+List the assumptions made by the project. These may be assumptions about the data, which can be verified during data mining, but may also include non-verifiable assumptions related to the project. It is particularly important to list the latter if they will affect the validity of the results.
+
 #### Constraints
 
-- [ ] Check general constraints (e.g., legal issues, budget, timescales, and resources)
-- [ ] Check access rights to data sources (e.g., access restrictions, password required)  
-- [ ] Check technical accessibility of data (operating systems, data management system, file or database format)  
-- [ ] Check whether relevant knowledge is accessible  
-- [ ] Check budget constraints (fixed costs, implementation costs, etc.
+There are no foreseeable constraints in the development of this project.
 
 ## Output of the project
 
 A business goal states objectives in business terminology; a data mining goal states project objectives in technical terms. For example, the business goal might be, “Increase catalog sales to existing customers,”  
 while a data mining goal might be, “Predict how many widgets a customer will buy, given their purchases over the past three years, relevant demographic information, and the price of the item.”
-
 
 The Data Mining Goals section states the results of the project that enable the achievement of the business objectives. As well as listing the probable data mining approaches, the success criteria for the results in data mining terms, should also be listed.
 
@@ -125,12 +87,6 @@ This section lists the stages to be executed in the project, together with their
 
 ### Tools and techniques
 
-At the end of the first phase, the project team performs an initial assessment of tools and techniques. Here, it is important to select a data mining tool that supports various methods for different stages of the process, since the selection of tools and techniques may influence the entire project.
+As our tool of choice, the programming language R was chosen, as it provides an incredible out of the box API for data understanding, with its  built-in charting features and Data Frame structures. When trying to figure out how the data is structured and seeing some patterns emerge, having a programming language like R, which allows us to do this seamlesly, is a great advantage.
 
-This section gives an initial view of what tools and techniques are likely to be used and how. It describes the requirements for
-tools and techniques, lists available tools and techniques, and matches them to requirements.
-
-- [ ] Create a list of selection criteria for tools and techniques (or use an existing one if available)  
-- [ ] Choose potential tools and techniques  
-- [ ] Evaluate appropriateness of techniques  
-- [ ] Review and prioritize applicable techniques according to the evaluation of alternative solutions
+As a backup tool, we may end up using RapidMiner, for its ease of use and simplicity by being a no-code tool, and for its ability to quickly generate some predictive analysis on the dataset, without a lot of work from its user. While we will try to stick to R only during this project, RapidMiner may be a valuable asset in the future.
