@@ -1,3 +1,5 @@
+if (!require("purrr")) install.packages("purrr")
+
 account_data <- read.csv("data/account.csv", sep = ";")
 card_data <- read.csv("data/card_dev.csv", sep = ";")
 client_data <- read.csv("data/client.csv", sep = ";")
@@ -6,6 +8,8 @@ district_data <- read.csv("data/district.csv", sep = ";")
 loan_data <- read.csv("data/loan_dev.csv", sep = ";")
 trans_data <- read.csv("data/trans_dev.csv", sep = ";")
 
+client_data <- transform(client_data, gender = ifelse(((birth_number %/% 100) %% 100) < 12, "Male", "Female"))
+write.csv(client_data, "data/client-transformed.csv")
 
 # Accounts per region
 account_district <- merge(account_data, district_data,
