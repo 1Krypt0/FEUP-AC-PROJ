@@ -38,3 +38,30 @@ client_data <- transform(client_data, birthday = as.Date(
 ))
 
 client_data <- subset(client_data, select = -c(birth_number))
+
+# Loan data
+# Make date more readable
+loan_data <- transform(loan_data, date = as.Date(
+  paste(
+    paste("19", date %/% 10000, sep = ""),
+    (date %/% 100) %% 100,
+    date %% 100,
+    sep = "-"
+  ),
+  format = "%Y-%m-%d"
+))
+
+# Transaction data
+# Make date more readable
+trans_data <- transform(trans_data, date = as.Date(
+  paste(
+    paste("19", date %/% 10000, sep = ""),
+    (date %/% 100) %% 100,
+    date %% 100,
+    sep = "-"
+  ),
+  format = "%Y-%m-%d"
+))
+# Drop rows where operation is null
+trans_data <-
+  trans_data[!(is.na(trans_data$operation) | trans_data$operation == ""), ]
