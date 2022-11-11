@@ -22,3 +22,5 @@ client_data <- transform(client_data, birthday = as.Date(
   ),
   format = "%Y-%m-%d"
 ))
+
+client_data <- subset(client_data, select = -c(birth_number))
