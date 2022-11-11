@@ -1,5 +1,3 @@
-if (!require("purrr")) install.packages("purrr")
-
 account_data <- read.csv("data/account.csv", sep = ";")
 card_data <- read.csv("data/card_dev.csv", sep = ";")
 client_data <- read.csv("data/client.csv", sep = ";")
