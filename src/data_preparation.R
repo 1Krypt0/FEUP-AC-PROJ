@@ -6,6 +6,20 @@ district_data <- read.csv("data/district.csv", sep = ";")
 loan_data <- read.csv("data/loan_dev.csv", sep = ";")
 trans_data <- read.csv("data/trans_dev.csv", sep = ";")
 
+# Account data
+# Make date more readable
+account_data <- transform(account_data, date = as.Date(
+  paste(
+    paste("19", date %/% 10000, sep = ""),
+    (date %/% 100) %% 100,
+    date %% 100,
+    sep = "-"
+  ),
+  format = "%Y-%m-%d"
+))
+
+# Client data
+# Separate gender and birthday from birth_number and drop birth_number
 client_data <- transform(client_data,
   gender = ifelse(((birth_number %/% 100) %% 100) <= 12, "Male", "Female")
 )
