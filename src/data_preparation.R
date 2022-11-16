@@ -1,3 +1,5 @@
+library("dplyr")
+
 account_data <- read.csv("data/account.csv", sep = ";")
 card_data <- read.csv("data/card_dev.csv", sep = ";")
 client_data <- read.csv("data/client.csv", sep = ";")
@@ -62,6 +64,22 @@ trans_data <- transform(trans_data, date = as.Date(
   ),
   format = "%Y-%m-%d"
 ))
-# Drop rows where operation is null
-trans_data <-
-  trans_data[!(is.na(trans_data$operation) | trans_data$operation == ""), ]
+
+
+# Make amount reflect if money entered or left the account
+trans_data <- transform(trans_data,
+  amount = ifelse(type == "credit", amount, -1 * amount)
+)
+
+# Every entry where the operation is null, the k_symbol is defined as
+# "interest credited", so we can fill operation column with new type
+# - interest credited
+
+trans_data <- transform(trans_data,
+  operation = ifelse(
+    is.na(trans_data$operation) | trans_data$operation == "" |
+      trans_data$operation == " ",
+    "interest credited",
+    operation
+  )
+)
