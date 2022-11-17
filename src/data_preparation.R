@@ -8,6 +8,20 @@ district_data <- read.csv("data/district.csv", sep = ";")
 loan_data <- read.csv("data/loan_dev.csv", sep = ";")
 trans_data <- read.csv("data/trans_dev.csv", sep = ";")
 
+# Change empty string values to NA
+
+account_data <-
+  replace(account_data, (account_data == "" | account_data == " "), NA)
+card_data <- replace(card_data, (card_data == "" | card_data == " "), NA)
+client_data <-
+  replace(client_data, (client_data == "" | client_data == " "), NA)
+disp_data <-
+  replace(disp_data, (disp_data == "" | disp_data == " "), NA)
+district_data <-
+  replace(district_data, (district_data == "" | district_data == " "), NA)
+loan_data <- replace(loan_data, (loan_data == "" | loan_data == " "), NA)
+trans_data <- replace(trans_data, (trans_data == "" | trans_data == " "), NA)
+
 # Account data
 # Make date more readable
 account_data <- transform(account_data, date = as.Date(
@@ -19,6 +33,19 @@ account_data <- transform(account_data, date = as.Date(
   ),
   format = "%Y-%m-%d"
 ))
+
+# Card data
+# Make date more readable
+card_data <- transform(card_data, issued = as.Date(
+  paste(
+    paste("19", issued %/% 10000, sep = ""),
+    (issued %/% 100) %% 100,
+    issued %% 100,
+    sep = "-"
+  ),
+  format = "%Y-%m-%d"
+))
+
 
 # Client data
 # Separate gender and birthday from birth_number and drop birth_number
@@ -83,3 +110,12 @@ trans_data <- transform(trans_data,
     operation
   )
 )
+
+## Remove columns and rows with more than 70% NA
+account_data <- account_data %>% select(where(~mean(is.na(.)) < 0.7))
+card_data <- card_data %>% select(where(~mean(is.na(.)) < 0.7))
+client_data <- client_data %>% select(where(~mean(is.na(.)) < 0.7))
+district_data <- district_data %>% select(where(~mean(is.na(.)) < 0.7))
+disp_data <- disp_data %>% select(where(~mean(is.na(.)) < 0.7))
+loan_data <- loan_data %>% select(where(~mean(is.na(.)) < 0.7))
+trans_data <- trans_data %>% select(where(~mean(is.na(.)) < 0.7))
