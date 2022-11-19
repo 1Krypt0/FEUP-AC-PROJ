@@ -90,12 +90,26 @@ district_data$unemploymant.rate..95[
 district_data$unemploymant.rate..96[
   is.na(district_data$unemploymant.rate..96)
 ] <- mean(as.numeric(district_data$unemploymant.rate..96), na.rm = TRUE)
+
+district_data$no..of.commited.crimes..95[
+  is.na(district_data$no..of.commited.crimes..95)
+] <- mean(as.numeric(district_data$no..of.commited.crimes.95), na.rm = TRUE)
+district_data$no..of.commited.crimes..96[
+  is.na(district_data$no..of.commited.crimes..96)
+] <- mean(as.numeric(district_data$no..of.commited.crimes..96), na.rm = TRUE)
+
 # Calculate average between 95 and 96
 district_data <- transform(district_data, unemployment_rate_avg =
   as.numeric(district_data$unemploymant.rate..95)
   + as.numeric(district_data$unemploymant.rate..96) / 2
 )
-# Calculate whether or not the unemployment has been growing
+district_data <- transform(district_data, crimes_rate_avg_capita =
+  (as.numeric(district_data$unemploymant.rate..95)
+  + as.numeric(district_data$unemploymant.rate..96) / 2)
+  / as.numeric(district_data$no..of.inhabitants)
+)
+
+# Calculate whether or not the unemployment/crimes has been growing
 district_data <- transform(district_data, unemployment_growing =
   ifelse(
     as.numeric(district_data$unemploymant.rate..96) >
@@ -104,6 +118,16 @@ district_data <- transform(district_data, unemployment_growing =
     0
   )
 )
+district_data <- transform(district_data, crimes_growing =
+  ifelse(
+    as.numeric(district_data$no..of.commited.crimes..96) >
+    as.numeric(district_data$no..of.commited.crimes..95),
+    1,
+    0
+  )
+)
+
+
 
 # Loan data
 # Make date more readable
