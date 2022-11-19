@@ -1,10 +1,12 @@
 library("dplyr")
+library(corrplot)
 
 account_data <- read.csv("data/account.csv", sep = ";")
 card_data <- read.csv("data/card_dev.csv", sep = ";")
 client_data <- read.csv("data/client.csv", sep = ";")
 disp_data <- read.csv("data/disp.csv", sep = ";")
-district_data <- read.csv("data/district.csv", sep = ";", na.strings = c("NaN", "?"))
+district_data <- read.csv("data/district.csv",
+  sep = ";", na.strings = c("NaN", "?"))
 loan_data <- read.csv("data/loan_dev.csv", sep = ";")
 trans_data <- read.csv("data/trans_dev.csv", sep = ";")
 
@@ -17,8 +19,7 @@ client_data <-
 disp_data <-
   replace(disp_data, (disp_data == "" | disp_data == " "), NA)
 district_data <-
-  replace(district_data, (district_data == "" | district_data == " " |
-    district_data == "?"), NA)
+  replace(district_data, (district_data == "" | district_data == " "), NA)
 loan_data <- replace(loan_data, (loan_data == "" | loan_data == " "), NA)
 trans_data <- replace(trans_data, (trans_data == "" | trans_data == " "), NA)
 
@@ -86,6 +87,12 @@ colnames(district_data)[
 colnames(district_data)[
   colnames(district_data) == "no..of.enterpreneurs.per.1000.inhabitants"
 ] <- "entrepreneur_rate"
+colnames(district_data)[
+  colnames(district_data) == "no..of.inhabitants"
+] <- "population"
+colnames(district_data)[
+  colnames(district_data) == "ratio.of.urban.inhabitants"
+] <- "urban_ratio"
 
 # Fix values that were "?" to be the column average
 district_data$unemploymant.rate..95[
@@ -110,7 +117,7 @@ district_data <- transform(district_data, unemployment_rate_avg =
 district_data <- transform(district_data, crimes_rate_avg_capita =
   (as.numeric(district_data$unemploymant.rate..95)
   + as.numeric(district_data$unemploymant.rate..96) / 2)
-  / as.numeric(district_data$no..of.inhabitants)
+  / as.numeric(district_data$population)
 )
 
 # Calculate whether or not the unemployment/crimes has been growing
@@ -133,7 +140,13 @@ district_data <- transform(district_data, crimes_growing =
 
 
 district_data <- subset(district_data, select = -c(unemploymant.rate..95,
-  unemploymant.rate..96, no..of.commited.crimes..95, no..of.commited.crimes..96
+  unemploymant.rate..96, no..of.commited.crimes..95, no..of.commited.crimes..96,
+  no..of.municipalities.with.inhabitants...499,
+  no..of.municipalities.with.inhabitants.500.1999,
+  no..of.municipalities.with.inhabitants.2000.9999,
+  no..of.municipalities.with.inhabitants..10000,
+  region,
+  no..of.cities
 ))
 
 
@@ -266,7 +279,13 @@ data <- loan_data %>%
     difftime(loan_date, acc_creation_date, units = "days")))
   ) %>%
   select(-c(loan_date, acc_creation_date, account_id, district_id, date,
-    disp_id, client_id
+    disp_id, client_id, loan_id
   )) %>%
 
   distinct()
+
+
+data_cor <- data %>%
+    select_if(is.numeric) %>%
+    cor(.)
+corrplot(data_cor, method = 'square', type = 'lower', diag = FALSE)
