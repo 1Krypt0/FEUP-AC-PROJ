@@ -17,13 +17,14 @@ client_data <-
 disp_data <-
   replace(disp_data, (disp_data == "" | disp_data == " "), NA)
 district_data <-
-  replace(district_data, (district_data == "" | district_data == " "), NA)
+  replace(district_data, (district_data == "" | district_data == " " |
+    district_data == "?"), NA)
 loan_data <- replace(loan_data, (loan_data == "" | loan_data == " "), NA)
 trans_data <- replace(trans_data, (trans_data == "" | trans_data == " "), NA)
 
 # Account data
 # Make date more readable
-account_data <- transform(account_data, date = format(as.Date(
+account_data <- transform(account_data, acc_creation_date = as.Date(
   paste(
     paste("19", date %/% 10000, sep = ""),
     (date %/% 100) %% 100,
@@ -31,9 +32,11 @@ account_data <- transform(account_data, date = format(as.Date(
     sep = "-"
   ),
   format = "%Y-%m-%d"
-), "%Y"))
+))
 
-colnames(account_data)[colnames(account_data) == "date"] <- "created"
+account_data$age_days <- trunc(as.numeric(
+  difftime(Sys.Date(), account_data$acc_creation_date, units = "days")
+))
 
 # Card data
 # Make date more readable
@@ -51,7 +54,7 @@ card_data <- transform(card_data, issued = format(as.Date(
 # Client data
 # Separate gender and birthday from birth_number and drop birth_number
 client_data <- transform(client_data,
-  gender = ifelse(((birth_number %/% 100) %% 100) <= 12, "Male", "Female")
+  gender = ifelse(((birth_number %/% 100) %% 100) <= 12, "M", "F")
 )
 
 client_data <- transform(client_data, birthday = as.Date(
@@ -72,6 +75,35 @@ client_data$age <- trunc(as.numeric(
 ) / 52.25)
 
 client_data <- subset(client_data, select = -c(birth_number, birthday))
+
+# District data
+# Rename code to district id to ease joins
+# Rename columns for consistency
+colnames(district_data)[colnames(district_data) == "code"] <- "district_id"
+colnames(district_data)[
+  colnames(district_data) == "average.salary"
+] <- "average_salary"
+# Fix values that were "?" to be the column average
+district_data$unemploymant.rate..95[
+  is.na(district_data$unemploymant.rate..95)
+] <- mean(as.numeric(district_data$unemploymant.rate..95), na.rm = TRUE)
+district_data$unemploymant.rate..96[
+  is.na(district_data$unemploymant.rate..96)
+] <- mean(as.numeric(district_data$unemploymant.rate..96), na.rm = TRUE)
+# Calculate average between 95 and 96
+district_data <- transform(district_data, unemployment_rate_avg =
+  as.numeric(district_data$unemploymant.rate..95)
+  + as.numeric(district_data$unemploymant.rate..96) / 2
+)
+# Calculate whether or not the unemployment has been growing
+district_data <- transform(district_data, unemployment_growing =
+  ifelse(
+    as.numeric(district_data$unemploymant.rate..96) >
+    as.numeric(district_data$unemploymant.rate..95),
+    1,
+    0
+  )
+)
 
 # Loan data
 # Make date more readable
@@ -148,13 +180,14 @@ aggregated_trans <- trans_data %>%
   mutate(withdrawal_count = sum(amount < 0)) %>%
   mutate(withdrawal_ratio = mean(amount < 0)) %>%
   # Amount stats
-  mutate(amount_min = amount[which.min(abs(amount))][1]) %>%
-  mutate(amount_max = amount[which.max(abs(amount))][1]) %>%
-  mutate(amount_net = sum(amount)) %>%
+  mutate(smallest_transaction = amount[which.min(abs(amount))][1]) %>%
+  mutate(biggest_transaction = amount[which.max(abs(amount))][1]) %>%
+  mutate(transactions_net = sum(amount)) %>%
   # Balance stats
   mutate(balance_min = min(balance)) %>%
   mutate(balance_max = max(balance)) %>%
-  mutate(balance_mean = mean(balance)) %>%
+  mutate(current_balance = last(balance)) %>%
+  mutate(times_negative_balance = sum(balance < 0)) %>%
   # Operation ratios
   mutate(credit_cash_ratio =
     mean(as.character(operation) == "credit in cash")) %>%
@@ -168,8 +201,8 @@ aggregated_trans <- trans_data %>%
     mean(as.character(operation) == "remittance to another bank")) %>%
   mutate(withdrawal_card_ratio =
     mean(as.character(operation) == "credit card withdrawal")) %>%
-  mutate(sanction_ratio =
-    mean(as.character(category) == "sanction interest if negative balance")) %>%
+  mutate(sanctions =
+    sum(as.character(category) == "sanction interest if negative balance")) %>%
 
   distinct()
 
@@ -177,3 +210,29 @@ aggregated_trans <- trans_data %>%
 trans_agg <- subset(aggregated_trans, select =
   -c(trans_id, operation, amount, balance, date, category)
 )
+
+# Join tables and create more derived attributes
+data <- loan_data %>%
+  rename(loan_date = date) %>%
+  left_join(account_data, by = "account_id") %>%
+  left_join(trans_agg, by = "account_id") %>%
+  mutate(transactions_net = transactions_net / age_days) %>%
+  mutate(sanctions_rate = sanctions / age_days) %>%
+  rename(daily_transactions_net = transactions_net) %>%
+  left_join(disp_data, by = "account_id") %>%
+  mutate(is_owner = ifelse(type == "OWNER", 1, 0)) %>%
+  select(-age_days, -type, -sanctions) %>%
+  left_join(card_data, "disp_id") %>%
+  mutate(has_card = ifelse(!is.na(card_id), 1, 0)) %>%
+  mutate(is_gold = ifelse(type == "gold", 1, 0)) %>%
+  select(-card_id, -type, -issued) %>%
+  left_join(district_data, by = "district_id") %>%
+  select(-c(name)) %>%
+  mutate(can_afford_loan = ifelse(average_salary > payments, 1, 0)) %>%
+  mutate(can_pay_until = current_balance / payments) %>%
+  mutate(acc_age_when_loan = trunc(as.numeric(
+    difftime(loan_date, acc_creation_date, units = "days")))
+  ) %>%
+  select(-c(loan_date, acc_creation_date)) %>%
+
+  distinct()
