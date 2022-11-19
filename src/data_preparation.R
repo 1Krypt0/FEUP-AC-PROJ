@@ -4,7 +4,7 @@ account_data <- read.csv("data/account.csv", sep = ";")
 card_data <- read.csv("data/card_dev.csv", sep = ";")
 client_data <- read.csv("data/client.csv", sep = ";")
 disp_data <- read.csv("data/disp.csv", sep = ";")
-district_data <- read.csv("data/district.csv", sep = ";")
+district_data <- read.csv("data/district.csv", sep = ";", na.strings = c("NaN", "?"))
 loan_data <- read.csv("data/loan_dev.csv", sep = ";")
 trans_data <- read.csv("data/trans_dev.csv", sep = ";")
 
@@ -83,6 +83,10 @@ colnames(district_data)[colnames(district_data) == "code"] <- "district_id"
 colnames(district_data)[
   colnames(district_data) == "average.salary"
 ] <- "average_salary"
+colnames(district_data)[
+  colnames(district_data) == "no..of.enterpreneurs.per.1000.inhabitants"
+] <- "entrepreneur_rate"
+
 # Fix values that were "?" to be the column average
 district_data$unemploymant.rate..95[
   is.na(district_data$unemploymant.rate..95)
@@ -93,7 +97,7 @@ district_data$unemploymant.rate..96[
 
 district_data$no..of.commited.crimes..95[
   is.na(district_data$no..of.commited.crimes..95)
-] <- mean(as.numeric(district_data$no..of.commited.crimes.95), na.rm = TRUE)
+] <- mean(as.numeric(district_data$no..of.commited.crimes..95), na.rm = TRUE)
 district_data$no..of.commited.crimes..96[
   is.na(district_data$no..of.commited.crimes..96)
 ] <- mean(as.numeric(district_data$no..of.commited.crimes..96), na.rm = TRUE)
@@ -127,6 +131,10 @@ district_data <- transform(district_data, crimes_growing =
   )
 )
 
+
+district_data <- subset(district_data, select = -c(unemploymant.rate..95,
+  unemploymant.rate..96, no..of.commited.crimes..95, no..of.commited.crimes..96
+))
 
 
 # Loan data
@@ -248,7 +256,7 @@ data <- loan_data %>%
   select(-age_days, -type, -sanctions) %>%
   left_join(card_data, "disp_id") %>%
   mutate(has_card = ifelse(!is.na(card_id), 1, 0)) %>%
-  mutate(is_gold = ifelse(type == "gold", 1, 0)) %>%
+  mutate(is_gold = ifelse((!is.na(type) & type == "gold"), 1, 0)) %>%
   select(-card_id, -type, -issued) %>%
   left_join(district_data, by = "district_id") %>%
   select(-c(name)) %>%
@@ -257,6 +265,8 @@ data <- loan_data %>%
   mutate(acc_age_when_loan = trunc(as.numeric(
     difftime(loan_date, acc_creation_date, units = "days")))
   ) %>%
-  select(-c(loan_date, acc_creation_date)) %>%
+  select(-c(loan_date, acc_creation_date, account_id, district_id, date,
+    disp_id, client_id
+  )) %>%
 
   distinct()
