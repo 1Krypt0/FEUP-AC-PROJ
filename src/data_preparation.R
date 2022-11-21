@@ -114,10 +114,11 @@ district_data <- transform(district_data, unemployment_rate_avg =
   as.numeric(district_data$unemploymant.rate..95)
   + as.numeric(district_data$unemploymant.rate..96) / 2
 )
-district_data <- transform(district_data, crimes_rate_avg_capita =
+district_data <- transform(district_data, crimes_rate_per_thousand =
   (as.numeric(district_data$unemploymant.rate..95)
   + as.numeric(district_data$unemploymant.rate..96) / 2)
-  / as.numeric(district_data$population)
+  / as.numeric(district_data$population) 
+  * 1000
 )
 
 # Calculate whether or not the unemployment/crimes has been growing
@@ -265,7 +266,7 @@ data <- loan_data %>%
   mutate(sanctions_rate = sanctions / age_days) %>%
   rename(daily_transactions_net = transactions_net) %>%
   left_join(disp_data, by = "account_id") %>%
-  mutate(is_owner = ifelse(type == "OWNER", 1, 0)) %>%
+  filter(type == "OWNER") %>%
   select(-age_days, -type, -sanctions) %>%
   left_join(card_data, "disp_id") %>%
   mutate(has_card = ifelse(!is.na(card_id), 1, 0)) %>%
@@ -289,3 +290,5 @@ data_cor <- data %>%
     select_if(is.numeric) %>%
     cor(.)
 corrplot(data_cor, method = 'square', type = 'lower', diag = FALSE)
+
+write.csv(data,'data/dataframe.csv', row.names = FALSE)
