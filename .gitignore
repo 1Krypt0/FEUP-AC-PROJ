@@ -8,6 +8,8 @@ data/
 .Rapp.history
 data/
 
+data/
+
 # Distribution / packaging
 .Python
 build/
