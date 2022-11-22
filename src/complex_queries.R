@@ -12,4 +12,4 @@ final_data[final_data$frequency == "weekly issuance"]$frequency <- "1"
 final_data[final_data$frequency == "monthly issuance"]$frequency <- "2"
 final_data[final_data$frequency == "issuance after transaction"]$frequency <- "3"
 
-write.csv(final_data, "data/new.csv", row.names = FALSE)
+write.csv(final_data, "data/final_csv.csv", row.names=FALSE)
