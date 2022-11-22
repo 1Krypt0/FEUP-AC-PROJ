@@ -279,7 +279,7 @@ data <- loan_data %>%
   mutate(acc_age_when_loan = trunc(as.numeric(
     difftime(loan_date, acc_creation_date, units = "days")))
   ) %>%
-  select(-c(loan_date, acc_creation_date, account_id, district_id, date,
+  select(-c(acc_creation_date, account_id, district_id, date,
     disp_id, client_id, loan_id
   )) %>%
 
