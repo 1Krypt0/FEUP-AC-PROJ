@@ -9,6 +9,7 @@ from sklearn.model_selection import (
     TimeSeriesSplit,
     train_test_split,
 )
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from imblearn.over_sampling import SMOTE
 
@@ -73,60 +74,49 @@ x_train_bal, y_train_bal = smote.fit_resample(x_train, y_train)
 
 # Apply GridSearch to find out the best values for the model.
 # For now the model will be a Decision Tree
-model = DecisionTreeClassifier()
-splitter = TimeSeriesSplit()
+SPLITTER = TimeSeriesSplit()
+
+
+def apply(model, params):
+    validator = GridSearchCV(
+        estimator=model, param_grid=params, n_jobs=-1, cv=SPLITTER, verbose=2
+    )
+
+    # Fit the model into the training data
+    validator.fit(x_train_bal, y_train_bal)
+
+    # Now test and evaluate it with the testing data
+    print(f"The best params for this validator are {validator.best_params_}")
+
+    evaluate_model(validator, x_test, y_test, ["not accepted", "accepted"], None)
+
+
+model = GradientBoostingClassifier()
+# For the Decision Tree
+# params = {
+#     "criterion": ["gini", "entropy"],
+#     "splitter": ["best", "random"],
+#     "max_depth": range(1, 50),
+#     "min_samples_split": range(2, 15),
+#     "min_samples_leaf": range(1, 7),
+# }
+
+# For the Random Forest
+# params = {
+#     "n_estimators": range(5, 30),
+#     "max_features": range(1, 8),
+#     "max_depth": range(1, 15),
+#     "criterion": ["gini", "entropy"],
+# }
+#
+# For the Gradient Boost
 params = {
-    "criterion": ["gini", "entropy"],
-    "splitter": ["best", "random"],
-    "max_depth": range(1, 50),
-    "min_samples_split": range(2, 15),
-    "min_samples_leaf": range(1, 7),
+    "max_features": range(7, 20, 2),
+    "min_samples_split": range(1000, 2100, 200),
+    "min_samples_leaf": range(30, 71, 10),
+    "max_depth": range(5, 16, 2),
+    "min_samples_split": range(200, 1001, 200),
 }
-validator = GridSearchCV(
-    estimator=model, param_grid=params, n_jobs=-1, cv=splitter, verbose=2
-)
 
-# Fit the model into the training data
-validator.fit(x_train_bal, y_train_bal)
 
-# Now test and evaluate it with the testing data
-print(f"The best params for this validator are {validator.best_params_}")
-
-evaluate_model(validator, x_test, y_test, ["not accepted", "accepted"], None)
-
-# Highlighted with shaders must have checkboxes to disable it
-
-# print("Number of transactions X__train dataset: ", X__train.shape)
-# print("Number of transactions y__train dataset: ", y__train.shape)
-# print("Number of transactions X__test dataset: ", X__test.shape)
-# print("Number of transactions y__test dataset: ", y__test.shape)
-#
-#
-# # logistic regression object
-# lrr = LogisticRegression()
-# # train the model on train set
-# lrr.fit(X__train, y__train.ravel())
-# predictions = lrr.predict(X__test)
-# # print classification report
-# print(classification_report(y__test, predictions))
-#
-#
-# print("Before Over Sampling, count of the label '1': {}".format(sum(y__train == 1)))
-# print("Before Over Sampling, count of the label '0': {} \n".format(sum(y__train == 0)))
-# X__train_res, y__train_res = sm1.fit_resample(X__train, y__train.ravel())
-# print("After Over Sampling, the shape of the train_X: {}".format(X__train_res.shape))
-# print("After Over Sampling, the shape of the train_y: {} \n".format(y__train_res.shape))
-# print("After Over Sampling, count of the label '1': {}".format(sum(y__train_res == 1)))
-# print("After Over Sampling, count of the label '0': {}".format(sum(y__train_res == 0)))
-#
-# from sklearn.tree import DecisionTreeClassifier
-# from sklearn.metrics import accuracy_score
-#
-#
-# clf = DecisionTreeClassifier(
-#     max_depth=4, criterion="entropy", max_features=0.6, splitter="best"
-# )
-# clf.fit(X__train_res, y__train_res)
-# predictions = clf.predict(X__test)
-#
-# print(accuracy_score(y__test, predictions))
+apply(model, params)
