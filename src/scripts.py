@@ -9,6 +9,7 @@ from sklearn.model_selection import (
     TimeSeriesSplit,
     train_test_split,
 )
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from imblearn.over_sampling import SMOTE
@@ -20,7 +21,21 @@ def evaluate_model(
     """
     This helper function prints the report and evaluation metrics for the model.
     """
-    predictions = model.predict(testing_inputs)
+    predictions = model.predict_proba(testing_inputs)
+
+    print("INPUTS", testing_inputs)
+    print("PREDICTIONS", predictions)
+
+    probabilities = [0 if x[0] < 0.000001 else x[0] for x in predictions]
+    probabilities = ["{:f}".format(x) for x in probabilities]
+
+    submit = pd.DataFrame()
+    submit["Id"] = testing_inputs["loan_id"]
+    submit["Predicted"] = probabilities
+
+    submit.to_csv(
+        f"results/{model.estimator.__class__.__name__}_result.csv", sep=",", index=False
+    )
 
     print("=" * 70)
     print(f"Evaluation metrics for {model.__class__.__name__}")
@@ -74,7 +89,6 @@ x_train_bal, y_train_bal = smote.fit_resample(x_train, y_train)
 
 # Apply GridSearch to find out the best values for the model.
 # For now the model will be a Decision Tree
-SPLITTER = TimeSeriesSplit()
 
 
 def apply(model, params):
@@ -91,14 +105,15 @@ def apply(model, params):
     evaluate_model(validator, x_test, y_test, ["not accepted", "accepted"], None)
 
 
-model = GradientBoostingClassifier()
+SPLITTER = TimeSeriesSplit()
+MODEL = GradientBoostingClassifier()
 # For the Decision Tree
 # params = {
-#     "criterion": ["gini", "entropy"],
-#     "splitter": ["best", "random"],
-#     "max_depth": range(1, 50),
-#     "min_samples_split": range(2, 15),
-#     "min_samples_leaf": range(1, 7),
+#     "criterion": ["entropy"],
+#     "splitter": ["random"],
+#     "max_depth": [21],
+#     "min_samples_split": [6],
+#     "min_samples_leaf": [2],
 # }
 
 # For the Random Forest
@@ -110,13 +125,14 @@ model = GradientBoostingClassifier()
 # }
 #
 # For the Gradient Boost
-params = {
-    "max_features": range(7, 20, 2),
-    "min_samples_split": range(1000, 2100, 200),
-    "min_samples_leaf": range(30, 71, 10),
-    "max_depth": range(5, 16, 2),
-    "min_samples_split": range(200, 1001, 200),
-}
+# params = {
+#     "max_features": range(7, 20, 2),
+#     "min_samples_split": range(1000, 2100, 200),
+#     "min_samples_leaf": range(30, 71, 10),
+#     "max_depth": range(5, 16, 2),
+#     "min_samples_split": range(200, 1001, 200),
+# }
+# For the KNN
 
 
-apply(model, params)
+apply(MODEL, params)
