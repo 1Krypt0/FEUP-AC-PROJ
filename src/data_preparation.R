@@ -160,6 +160,9 @@ loan_data <- transform(loan_data, date = as.Date(
   format = "%Y-%m-%d"
 ))
 
+
+
+
 # Transaction data
 # Rename k_symbol column
 colnames(trans_data)[colnames(trans_data) == "k_symbol"] <- "category"
@@ -294,5 +297,7 @@ data_cor <- data %>%
     select_if(is.numeric) %>%
     cor(.)
 corrplot(data_cor, method = 'square', type = 'lower', diag = FALSE)
+
+if(!'status' %in% names(data)) data <- data %>% mutate(status = c(NA))
 
 write.csv(data,'data/dataframe.csv', row.names = FALSE)
