@@ -2,13 +2,13 @@ library("dplyr")
 library(corrplot)
 
 account_data <- read.csv("data/account.csv", sep = ";")
-card_data <- read.csv("data/card_dev.csv", sep = ";")
+card_data <- read.csv("data/card_comp.csv", sep = ";")
 client_data <- read.csv("data/client.csv", sep = ";")
 disp_data <- read.csv("data/disp.csv", sep = ";")
 district_data <- read.csv("data/district.csv",
   sep = ";", na.strings = c("NaN", "?"))
-loan_data <- read.csv("data/loan_dev.csv", sep = ";")
-trans_data <- read.csv("data/trans_dev.csv", sep = ";")
+loan_data <- read.csv("data/loan_comp.csv", sep = ";")
+trans_data <- read.csv("data/trans_comp.csv", sep = ";")
 
 # Change empty string values to NA
 account_data <-
@@ -280,7 +280,7 @@ data <- loan_data %>%
     difftime(loan_date, acc_creation_date, units = "days")))
   ) %>%
   select(-c(acc_creation_date, account_id, district_id, date,
-    disp_id, client_id, loan_id
+    disp_id, client_id
   )) %>%
 
   distinct()
@@ -291,4 +291,4 @@ data_cor <- data %>%
     cor(.)
 corrplot(data_cor, method = 'square', type = 'lower', diag = FALSE)
 
-write.csv(data,'data/dataframe.csv', row.names = FALSE)
+write.csv(data,'data/dataframe2.csv', row.names = FALSE)
