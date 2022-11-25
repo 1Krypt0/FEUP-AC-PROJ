@@ -71,11 +71,8 @@ client_data <- transform(client_data, birthday = as.Date(
   format = "%Y-%m-%d"
 ))
 
-client_data$age <- trunc(as.numeric(
-  difftime(Sys.Date(), client_data$birthday, units = "weeks")
-) / 52.25)
 
-client_data <- subset(client_data, select = -c(birth_number, birthday))
+client_data <- subset(client_data, select = -c(birth_number, district_id))
 
 # District data
 # Rename code to district id to ease joins
@@ -257,6 +254,8 @@ trans_agg <- subset(aggregated_trans, select =
   -c(trans_id, operation, amount, balance, date, category)
 )
 
+last_transaction = max(trans_data$date)
+
 # Join tables and create more derived attributes
 data <- loan_data %>%
   rename(loan_date = date) %>%
@@ -272,6 +271,10 @@ data <- loan_data %>%
   mutate(has_card = ifelse(!is.na(card_id), 1, 0)) %>%
   mutate(is_gold = ifelse((!is.na(type) & type == "gold"), 1, 0)) %>%
   select(-card_id, -type, -issued) %>%
+  left_join(client_data, by = "client_id") %>%
+  mutate(client_age = trunc(as.numeric(
+  difftime(as.Date(last_transaction), birthday, units = "weeks")
+) / 52.25)) %>%
   left_join(district_data, by = "district_id") %>%
   select(-c(name)) %>%
   mutate(can_afford_loan = ifelse(average_salary > payments, 1, 0)) %>%
