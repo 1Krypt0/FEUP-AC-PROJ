@@ -76,11 +76,26 @@ def evaluate_model(
 
 
 # Read the dataset and split into label and others
-x = pd.read_csv("data/dataframe.csv")
+x = pd.read_csv("dataframe.csv")
+
+correlated_features = set()
+correlation_matrix = x.corr()
+for i in range(len(correlation_matrix.columns)):
+    for j in range(i):
+        if abs(correlation_matrix.iloc[i, j]) > 0.98:
+            colname = correlation_matrix.columns[i]
+            correlated_features.add(colname)
 # Sort the entries by time
 x.sort_values(by="loan_date", inplace=True)
+
 y = x["status"]
-x = x.drop(["status", "frequency", "loan_date"], axis=1)
+# x = x.drop(["status", "frequency", "loan_date"], axis=1)
+
+unwanted_features = ["status", "loan_id"]
+features = [x for x in list(train_df) if x not in unwanted_features]
+x = x[features];
+
+
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
 
 # Apply SMOTE so that the classes get balanced
@@ -108,13 +123,13 @@ def apply(model, params):
 SPLITTER = TimeSeriesSplit()
 MODEL = GradientBoostingClassifier()
 # For the Decision Tree
-# params = {
-#     "criterion": ["entropy"],
-#     "splitter": ["random"],
-#     "max_depth": [21],
-#     "min_samples_split": [6],
-#     "min_samples_leaf": [2],
-# }
+params = {
+    "criterion": ["entropy"],
+    "splitter": ["random"],
+    "max_depth": [21],
+    "min_samples_split": [6],
+    "min_samples_leaf": [2],
+}
 
 # For the Random Forest
 # params = {
