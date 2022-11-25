@@ -258,7 +258,7 @@ trans_agg <- subset(aggregated_trans, select =
   -c(trans_id, operation, amount, balance, date, category)
 )
 
-last_transaction = max(trans_data$date)
+last_transaction <- max(trans_data$date)
 
 # Join tables and create more derived attributes
 data <- loan_data %>%
@@ -287,7 +287,7 @@ data <- loan_data %>%
     difftime(loan_date, acc_creation_date, units = "days")))
   ) %>%
   select(-c(acc_creation_date, account_id, district_id, date,
-    disp_id, client_id, loan_id
+    disp_id, client_id
   )) %>%
 
   distinct()
