@@ -8,7 +8,6 @@ prepare_datasets <- function(train = TRUE) {
   card_data <- prepare_card(train)
   loan_data <- prepare_loan(train)
   trans_data <- prepare_trans(train)
-
   trans_data <- remove_empty_cols(trans_data)
   trans_data <- aggregate_trans_data(trans_data)
 
@@ -344,7 +343,3 @@ join_tables <- function(account_data, card_data, client_data,
 
 prepare_datasets(TRUE)
 prepare_datasets(FALSE)
-
-
-
-# write.csv(data,'data/dataframe.csv', row.names = FALSE)
