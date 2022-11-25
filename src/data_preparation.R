@@ -163,6 +163,7 @@ loan_data <- transform(loan_data, date = as.Date(
 # Transaction data
 # Rename k_symbol column
 colnames(trans_data)[colnames(trans_data) == "k_symbol"] <- "category"
+trans_data$account <- replace(trans_data$account, (trans_data$account == 0), NA)
 
 # Make date more readable
 trans_data <- transform(trans_data, date = as.Date(
