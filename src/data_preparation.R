@@ -37,6 +37,13 @@ prepare_account <- function() {
     format = "%Y-%m-%d"
   ))
 
+  # Change string variables to integers, works better for later steps
+  account_data[account_data$frequency == "monthly issuance", ]$frequency <- 1
+  account_data[account_data$frequency == "weekly issuance", ]$frequency <- 2
+  account_data[
+    account_data$frequency == "issuance after transaction",
+  ]$frequency <- 3
+
   # Calculate age of account in days
   account_data$age_days <- trunc(as.numeric(
     difftime(Sys.Date(), account_data$acc_creation_date, units = "days")
@@ -194,6 +201,9 @@ prepare_loan <- function(train = TRUE) {
     ),
     format = "%Y-%m-%d"
   ))
+  # payments * duration = amount, so don't need to keep them all
+  loan_data <- subset(loan_data, select = -c(duration))
+
   return(loan_data)
 }
 
@@ -260,9 +270,7 @@ aggregate_trans_data <- function(trans_data) {
     # Add number of transactions per account
     mutate(trans_count = n()) %>%
     # Count credits/withdrawals
-    mutate(credit_count = sum(amount >= 0)) %>%
     mutate(credit_ratio = mean(amount >= 0)) %>%
-    mutate(withdrawal_count = sum(amount < 0)) %>%
     mutate(withdrawal_ratio = mean(amount < 0)) %>%
     # Amount stats
     mutate(smallest_transaction = amount[which.min(abs(amount))][1]) %>%
@@ -334,7 +342,7 @@ join_tables <- function(account_data, card_data, client_data,
       difftime(loan_date, acc_creation_date, units = "days")))
     ) %>%
     select(-c(acc_creation_date, account_id, district_id, date,
-      disp_id, client_id
+      disp_id, client_id, birthday
     )) %>%
 
     distinct()
