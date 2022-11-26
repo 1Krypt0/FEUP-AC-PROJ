@@ -59,7 +59,7 @@ prepare_client <- function() {
   replace(client_data, (client_data == "" | client_data == " "), NA)
 
   client_data <- transform(client_data,
-    gender = ifelse(((birth_number %/% 100) %% 100) <= 12, "M", "F")
+    gender = ifelse(((birth_number %/% 100) %% 100) <= 12, 0, 1)
   )
 
   client_data <- transform(client_data, birthday = as.Date(
