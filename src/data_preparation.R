@@ -2,6 +2,7 @@ library("dplyr")
 
 prepare_datasets <- function(train = TRUE) {
   account_data <- prepare_account()
+  print(head(account_data))
   client_data <- prepare_client()
   disp_data <- prepare_disp()
   district_data <- prepare_district()
@@ -17,7 +18,7 @@ prepare_datasets <- function(train = TRUE) {
                         trans_data)
 
   if (!train) data <- data %>% mutate(status = c(NA))
-  write.csv(data, ifelse(train, "data/train.csv", "data/test.csv"))
+  write.csv(data, ifelse(train, "data/train.csv", "data/test.csv"), row.names = FALSE)
 }
 
 prepare_account <- function() {
