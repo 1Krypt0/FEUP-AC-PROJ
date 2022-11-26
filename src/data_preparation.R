@@ -17,7 +17,7 @@ prepare_datasets <- function(train = TRUE) {
                         trans_data)
 
   if (!train) data <- data %>% mutate(status = c(NA))
-  write.csv(data, ifelse(train, "data/train.csv", "data/test.csv"))
+  write.csv(data, ifelse(train, "data/train.csv", "data/test.csv"), row.names = FALSE)
 }
 
 prepare_account <- function() {
