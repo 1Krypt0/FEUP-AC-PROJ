@@ -34,7 +34,7 @@ def evaluate_model(
     submit["Predicted"] = probabilities
 
     submit.to_csv(
-        f"results/{model.estimator.__class__.__name__}_result.csv", sep=",", index=False
+        f"{model.estimator.__class__.__name__}_result.csv", sep=",", index=False
     )
 
     print("=" * 70)
@@ -45,6 +45,7 @@ def evaluate_model(
     print(f"{model.__class__.__name__}'s default score metric: {score}")
 
     print("Classification report")
+    print(predictions)
     print(
         classification_report(
             testing_classes,
@@ -55,7 +56,7 @@ def evaluate_model(
             zero_division=1,
         )
     )
-
+    print(predictions)
     accuracy = accuracy_score(testing_classes, predictions, sample_weight=sample_weight)
     print(f"Accuracy: {accuracy:.4f}")
 
@@ -76,39 +77,86 @@ def evaluate_model(
 
 
 # Read the dataset and split into label and others
-x = pd.read_csv("dataframe.csv")
+test_x = pd.read_csv("dataframe.csv")
+train_x = pd.read_csv("dataframe2.csv")
+
+test_x.sort_values(by="loan_date", inplace=True)
+train_x.sort_values(by="loan_date", inplace=True)
 
 correlated_features = set()
-correlation_matrix = x.corr()
+correlation_matrix = train_x.corr()
 for i in range(len(correlation_matrix.columns)):
     for j in range(i):
         if abs(correlation_matrix.iloc[i, j]) > 0.98:
             colname = correlation_matrix.columns[i]
             correlated_features.add(colname)
-# Sort the entries by time
-x.sort_values(by="loan_date", inplace=True)
+            
+train_x.drop(columns=correlated_features, axis=1, inplace=True)
+test_x.drop(columns=correlated_features, axis=1, inplace=True)
 
-y = x["status"]
-# x = x.drop(["status", "frequency", "loan_date"], axis=1)
+unwanted_features = ["status", "loan_date", "frequency"]
 
-unwanted_features = ["status", "loan_id"]
-features = [x for x in list(train_df) if x not in unwanted_features]
-x = x[features];
+features = [x for x in list(train_x) if x not in unwanted_features]
+target = "status"
+
+X = train_x[features]
+y = train_x[target]
+
+X_test = test_x[features]
+y_test = test_x[target]
 
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
+
+X, X_test, y, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
 # Apply SMOTE so that the classes get balanced
 smote = SMOTE(random_state=2)
-x_train_bal, y_train_bal = smote.fit_resample(x_train, y_train)
+x_train_bal, y_train_bal = smote.fit_resample(X, y)
 
 # Apply GridSearch to find out the best values for the model.
 # For now the model will be a Decision Tree
 
+def test_export(model, test_df, file):
+    test = test_df[features]
 
-def apply(model, params):
+    confidences = model.predict_proba(test)[:,-1]
+
+    confidences = [0 if x < 0.000001 else x for x in confidences]
+    confidences = ["{:f}".format(x) for x in confidences]
+
+    submit = pd.DataFrame()
+
+    submit["Id"] = test_df["loan_id"]
+    submit["Predicted"] = confidences
+
+    submit.to_csv(file + ".csv", sep=",", index=False)
+    
+    return "Done exporting to: " + file + ".csv"
+    
+def evaluate(model, X_test, y_test):
+    y_pred = model.predict_proba(X_test)
+    
+    # Area Under the Curve, the higher the better
+    auc = metrics.roc_auc_score(y_test, y_pred[:,-1])
+    print("AUC Score: ", auc)
+
+    y_pred_normalized = np.argmax(model.predict_proba(X_test), axis=1)
+
+    cm = metrics.confusion_matrix(y_test, y_pred_normalized)
+    ax= plt.subplot()
+    sns.heatmap(cm, annot=True, fmt='g', ax=ax);  #annot=True to annotate cells, ftm='g' to disable scientific notation
+
+    # labels, title and ticks
+    ax.set_xlabel('Predicted labels');ax.set_ylabel('True labels'); 
+    ax.set_title('Confusion Matrix'); 
+    ax.xaxis.set_ticklabels(['yes', 'no']); ax.yaxis.set_ticklabels(['yes', 'no']);
+    
+    return y_pred[:,-1]
+
+
+def apply(X, y, model, params, cv=5):
     validator = GridSearchCV(
-        estimator=model, param_grid=params, n_jobs=-1, cv=SPLITTER, verbose=2
+        estimator=model, param_grid=params, n_jobs=-1, cv=cv, verbose=1, refit=True
     )
 
     # Fit the model into the training data
@@ -117,18 +165,19 @@ def apply(model, params):
     # Now test and evaluate it with the testing data
     print(f"The best params for this validator are {validator.best_params_}")
 
-    evaluate_model(validator, x_test, y_test, ["not accepted", "accepted"], None)
+    evaluate_model(validator, X_test, y_test, ["not accepted", "accepted"], None)
 
 
 SPLITTER = TimeSeriesSplit()
 MODEL = GradientBoostingClassifier()
 # For the Decision Tree
+
+dtc = DecisionTreeClassifier()
 params = {
-    "criterion": ["entropy"],
-    "splitter": ["random"],
-    "max_depth": [21],
-    "min_samples_split": [6],
-    "min_samples_leaf": [2],
+    'criterion': ['gini', 'entropy'],
+    'max_depth': range(1,20),
+    'min_samples_split': range(2,10),
+    'min_samples_leaf': range(1,6)
 }
 
 # For the Random Forest
@@ -150,4 +199,4 @@ params = {
 # For the KNN
 
 
-apply(MODEL, params)
+apply(X, y, dtc, params, 5)

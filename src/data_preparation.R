@@ -10,7 +10,6 @@ prepare_datasets <- function(train = TRUE) {
   trans_data <- prepare_trans(train)
   trans_data <- remove_empty_cols(trans_data)
   trans_data <- aggregate_trans_data(trans_data)
-
   data <- join_tables(account_data, card_data, client_data,
                         disp_data, district_data, loan_data,
                         trans_data)
