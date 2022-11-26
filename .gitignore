@@ -90,3 +90,5 @@ dmypy.json
 data/
 # RStudio Connect folder
 rsconnect/
+
+.ipynb_checkpoints/
