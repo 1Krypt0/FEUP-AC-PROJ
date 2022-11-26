@@ -8,8 +8,10 @@ prepare_datasets <- function(train = TRUE) {
   card_data <- prepare_card(train)
   loan_data <- prepare_loan(train)
   trans_data <- prepare_trans(train)
+
   trans_data <- remove_empty_cols(trans_data)
   trans_data <- aggregate_trans_data(trans_data)
+
   data <- join_tables(account_data, card_data, client_data,
                         disp_data, district_data, loan_data,
                         trans_data)
@@ -207,6 +209,17 @@ prepare_trans <- function(train = TRUE) {
     trans_data$account,
     (trans_data$account == 0), NA
   )
+
+  # Make date more readable
+  trans_data <- transform(trans_data, date = as.Date(
+    paste(
+      paste("19", date %/% 10000, sep = ""),
+      (date %/% 100) %% 100,
+      date %% 100,
+      sep = "-"
+    ),
+    format = "%Y-%m-%d"
+  ))
 
   # Make amount reflect if money entered or left the account
   trans_data <- transform(trans_data,
