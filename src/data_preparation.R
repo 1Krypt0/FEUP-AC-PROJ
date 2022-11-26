@@ -16,6 +16,7 @@ prepare_datasets <- function(train = TRUE) {
                         disp_data, district_data, loan_data,
                         trans_data)
 
+  print(colnames(data))
   if (!train) data <- data %>% mutate(status = c(NA))
   write.csv(data, ifelse(train, "data/train.csv", "data/test.csv"), row.names = FALSE)
 }
@@ -203,6 +204,9 @@ prepare_loan <- function(train = TRUE) {
   ))
   # payments * duration = amount, so don't need to keep them all
   loan_data <- subset(loan_data, select = -c(duration))
+
+  # Needed for later steps
+  if (train) loan_data[loan_data$status == -1, ]$status <- 0
 
   return(loan_data)
 }
