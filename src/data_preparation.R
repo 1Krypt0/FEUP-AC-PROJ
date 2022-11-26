@@ -208,17 +208,6 @@ prepare_trans <- function(train = TRUE) {
     (trans_data$account == 0), NA
   )
 
-  # Make date more readable
-  trans_data <- transform(trans_data, date = as.Date(
-    paste(
-      paste("19", date %/% 10000, sep = ""),
-      (date %/% 100) %% 100,
-      date %% 100,
-      sep = "-"
-    ),
-    format = "%Y-%m-%d"
-  ))
-
   # Make amount reflect if money entered or left the account
   trans_data <- transform(trans_data,
     amount = ifelse(type == "credit", amount, -1 * amount)

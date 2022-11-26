@@ -48,7 +48,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
+>>>>>>> 5c05c3c23a6de220ac60ae9ca302311c22641856
 
 # Session Data files
 .RData
