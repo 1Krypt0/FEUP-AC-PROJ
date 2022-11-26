@@ -2,7 +2,6 @@ library("dplyr")
 
 prepare_datasets <- function(train = TRUE) {
   account_data <- prepare_account()
-  print(head(account_data))
   client_data <- prepare_client()
   disp_data <- prepare_disp()
   district_data <- prepare_district()
@@ -345,7 +344,3 @@ join_tables <- function(account_data, card_data, client_data,
 
 prepare_datasets(TRUE)
 prepare_datasets(FALSE)
-
-
-
-# write.csv(data,'data/dataframe.csv', row.names = FALSE)
