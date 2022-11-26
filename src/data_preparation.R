@@ -2,13 +2,13 @@ library("dplyr")
 library(corrplot)
 
 account_data <- read.csv("data/account.csv", sep = ";")
-card_data <- read.csv("data/card_comp.csv", sep = ";")
+card_data <- read.csv("data/card_dev.csv", sep = ";")
 client_data <- read.csv("data/client.csv", sep = ";")
 disp_data <- read.csv("data/disp.csv", sep = ";")
 district_data <- read.csv("data/district.csv",
   sep = ";", na.strings = c("NaN", "?"))
-loan_data <- read.csv("data/loan_comp.csv", sep = ";")
-trans_data <- read.csv("data/trans_comp.csv", sep = ";")
+loan_data <- read.csv("data/loan_dev.csv", sep = ";")
+trans_data <- read.csv("data/trans_dev.csv", sep = ";")
 
 # Change empty string values to NA
 account_data <-
